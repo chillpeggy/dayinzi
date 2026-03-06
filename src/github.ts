@@ -1,8 +1,8 @@
 // GitHub API Backend Implementation
 // Replaces Firebase for a fully free, serverless architecture using Repositories and Issues.
 
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN';
-const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'YOUR_USERNAME/YOUR_REPO_NAME';
+const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || '';
+const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'chillpeggy/dayinzi';
 
 const API_BASE = 'https://api.github.com';
 
@@ -19,8 +19,8 @@ const getHeaders = () => ({
  * with the label "print-job".
  */
 export const addPrintJob = async (productData: any, copies: number = 1) => {
-    if (GITHUB_TOKEN === 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN') {
-        throw new Error('Please configure your GitHub Token in src/github.ts or .env');
+    if (!GITHUB_TOKEN) {
+        throw new Error('Please configure your GitHub Token in .env');
     }
 
     try {
@@ -57,7 +57,7 @@ export const addPrintJob = async (productData: any, copies: number = 1) => {
  * Polls for pending print jobs (Open issues with 'print-job' label)
  */
 export const fetchPendingPrintJobs = async () => {
-    if (GITHUB_TOKEN === 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN') {
+    if (!GITHUB_TOKEN) {
         return []; // Return empty if not configured to prevent constant errors
     }
 
