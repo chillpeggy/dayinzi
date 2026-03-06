@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-gray-900;
+    -webkit-tap-highlight-color: transparent;
+    font-family: 'Inter', 'Noto Serif SC', sans-serif;
+  }
+}
+
+/* Artistic Chinese font utility */
+.font-art {
+  font-family: 'ZCOOL XiaoWei', 'Noto Serif SC', serif;
+}
+
+/* Premium micro-interactions & utility classes */
+.glass {
+  @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-xl;
+}
+
+.smooth-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Sakura flower CSS drawing */
+.sakura-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.sakura-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 15% 20%, rgba(255, 183, 197, 0.25) 0%, transparent 40%),
+    radial-gradient(ellipse at 85% 15%, rgba(221, 185, 232, 0.2) 0%, transparent 40%),
+    radial-gradient(ellipse at 60% 80%, rgba(255, 218, 224, 0.2) 0%, transparent 35%),
+    radial-gradient(ellipse at 10% 75%, rgba(200, 220, 255, 0.15) 0%, transparent 35%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Petal SVG overlay pattern */
+.sakura-bg::after {
+  content: '🌸 🌺 ✿ 🌸 ✿ 🌺 🌸';
+  position: fixed;
+  top: -10px;
+  left: 0;
+  right: 0;
+  font-size: 18px;
+  letter-spacing: 30px;
+  opacity: 0.07;
+  filter: blur(1px);
+  transform: rotate(-15deg) translateY(-5px);
+  pointer-events: none;
+  z-index: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 200%;
+}
