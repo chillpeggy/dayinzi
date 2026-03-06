@@ -1,7 +1,16 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
-import PCScene from './components/PC/PCScene';
-import MobileScene from './components/Mobile/MobileScene';
+
+const PCScene = lazy(() => import('./components/PC/PCScene'));
+const MobileScene = lazy(() => import('./components/Mobile/MobileScene'));
+
+// Loading fallback component
+const PageLoader = () => (
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-gradient-to-br from-[#ffe4e1] via-[#fff0f5] to-[#e0ffff]">
+        <div className="w-16 h-16 border-4 border-rose-200 border-t-rose-400 rounded-full animate-spin mb-4"></div>
+        <p className="text-rose-400 font-medium animate-pulse">大茵子加载中...</p>
+    </div>
+);
 
 function Home() {
     const navigate = useNavigate();
@@ -47,11 +56,13 @@ function Home() {
 function App() {
     return (
         <Router>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/pc/*" element={<PCScene />} />
-                <Route path="/mobile/*" element={<MobileScene />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/pc/*" element={<PCScene />} />
+                    <Route path="/mobile/*" element={<MobileScene />} />
+                </Routes>
+            </Suspense>
         </Router>
     );
 }
