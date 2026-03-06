@@ -192,7 +192,7 @@ export default function MobileScene() {
                             <div className="absolute inset-0 rounded-full"
                                 style={{ background: 'linear-gradient(135deg, #FFB7C5, #D4A5F5, #87CEEB)', padding: '3px' }}>
                                 <div className="w-full h-full rounded-full overflow-hidden bg-white">
-                                    <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                                    <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-cover" />
                                 </div>
                             </div>
                             {/* Sparkle badge */}
