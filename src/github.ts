@@ -1,13 +1,33 @@
 // GitHub API Backend Implementation
 // Replaces Firebase for a fully free, serverless architecture using Repositories and Issues.
 
-const GITHUB_TOKEN = import.meta.env.VITE_GITHUB_TOKEN || '';
-const GITHUB_REPO = import.meta.env.VITE_GITHUB_REPO || 'chillpeggy/dayinzi';
+// Use localStorage to avoid baking secrets into the public GitHub Pages bundle
+const getGitHubToken = () => {
+    let token = localStorage.getItem('GITHUB_TOKEN');
+    if (!token) {
+        token = prompt("Please enter your GitHub Personal Access Token to enable Cloud Printing:");
+        if (token) {
+            localStorage.setItem('GITHUB_TOKEN', token);
+        }
+    }
+    return token || '';
+};
+
+const getGitHubRepo = () => {
+    let repo = localStorage.getItem('GITHUB_REPO');
+    if (!repo) {
+        repo = prompt("Please enter your GitHub Repository (e.g. chillpeggy/dayinzi):", "chillpeggy/dayinzi");
+        if (repo) {
+            localStorage.setItem('GITHUB_REPO', repo);
+        }
+    }
+    return repo || 'chillpeggy/dayinzi';
+};
 
 const API_BASE = 'https://api.github.com';
 
 const getHeaders = () => ({
-    'Authorization': `token ${GITHUB_TOKEN}`,
+    'Authorization': `token ${getGitHubToken()}`,
     'Accept': 'application/vnd.github.v3+json',
     'Content-Type': 'application/json',
 });
@@ -19,8 +39,9 @@ const getHeaders = () => ({
  * with the label "print-job".
  */
 export const addPrintJob = async (productData: any, copies: number = 1) => {
-    if (!GITHUB_TOKEN) {
-        throw new Error('Please configure your GitHub Token in .env');
+    const token = getGitHubToken();
+    if (!token) {
+        throw new Error('Please configure your GitHub Token');
     }
 
     try {
@@ -31,7 +52,7 @@ export const addPrintJob = async (productData: any, copies: number = 1) => {
             createdAt: Date.now()
         }, null, 2);
 
-        const response = await fetch(`${API_BASE}/repos/${GITHUB_REPO}/issues`, {
+        const response = await fetch(`${API_BASE}/repos/${getGitHubRepo()}/issues`, {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
@@ -57,13 +78,14 @@ export const addPrintJob = async (productData: any, copies: number = 1) => {
  * Polls for pending print jobs (Open issues with 'print-job' label)
  */
 export const fetchPendingPrintJobs = async () => {
-    if (!GITHUB_TOKEN) {
+    const token = getGitHubToken();
+    if (!token) {
         return []; // Return empty if not configured to prevent constant errors
     }
 
     try {
         // Fetch open issues labeled 'print-job'
-        const response = await fetch(`${API_BASE}/repos/${GITHUB_REPO}/issues?state=open&labels=print-job&sort=created&direction=asc`, {
+        const response = await fetch(`${API_BASE}/repos/${getGitHubRepo()}/issues?state=open&labels=print-job&sort=created&direction=asc`, {
             headers: getHeaders()
         });
 
@@ -100,7 +122,7 @@ export const fetchPendingPrintJobs = async () => {
  */
 export const completePrintJob = async (issueNumber: number) => {
     try {
-        const response = await fetch(`${API_BASE}/repos/${GITHUB_REPO}/issues/${issueNumber}`, {
+        const response = await fetch(`${API_BASE}/repos/${getGitHubRepo()}/issues/${issueNumber}`, {
             method: 'PATCH',
             headers: getHeaders(),
             body: JSON.stringify({
