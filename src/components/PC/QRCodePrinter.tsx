@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Printer, CloudUpload } from 'lucide-react';
-import { addPrintJob } from '../../github';
+import { addPrintJob } from '../../firebase';
 
 export default function QRCodePrinter({ product }: { product: any }) {
     const [isSending, setIsSending] = useState(false);

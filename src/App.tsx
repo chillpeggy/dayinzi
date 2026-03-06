@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import PCScene from './components/PC/PCScene';
 import MobileScene from './components/Mobile/MobileScene';
 
@@ -10,7 +10,7 @@ function Home() {
             <div className="bg-white/40 backdrop-blur-xl border border-white/50 rounded-[2.5rem] p-10 max-w-md w-full text-center space-y-10 animate-in fade-in zoom-in duration-700 shadow-2xl shadow-rose-200/50">
                 <div className="space-y-4">
                     <div className="w-24 h-24 mx-auto shadow-xl shadow-rose-200/60 rounded-full overflow-hidden mb-6 flex items-center justify-center border-4 border-white">
-                        <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                        <img src={`${import.meta.env.BASE_URL}logo.png`} alt="Logo" className="w-full h-full object-cover" />
                     </div>
                     <h1 className="text-4xl font-extrabold tracking-tight text-gray-800" style={{ fontFamily: 'serif' }}>大茵子</h1>
                     <p className="text-rose-400 font-medium">✨ 欢迎使用店务管家 ✨</p>

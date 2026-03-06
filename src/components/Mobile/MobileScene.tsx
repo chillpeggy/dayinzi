@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { fetchPendingPrintJobs, completePrintJob } from '../../github';
+import { onSnapshot, query, where, orderBy, doc, updateDoc } from 'firebase/firestore';
+import { db, printJobsRef } from '../../firebase';
 import Scanner from './Scanner';
 import Cart from './Cart';
 import { ChevronLeft, BarChart3, Printer } from 'lucide-react';
@@ -91,29 +92,19 @@ export default function MobileScene() {
     const [pendingJobs, setPendingJobs] = useState(0);       // cloud print jobs waiting
     const [printQueue, setPrintQueue] = useState<any[]>([]); // active queue
 
-    // 1. Poll GitHub Issues for pending print jobs every 5 seconds if connected
+    // 1. Listen to pending print jobs from Firestore
     useEffect(() => {
-        if (!printerConnected) return;
-
-        let intervalId: any;
-
-        const checkJobs = async () => {
-            try {
-                const jobs = await fetchPendingPrintJobs();
-                setPrintQueue(jobs);
-                setPendingJobs(jobs.length);
-            } catch (error) {
-                console.error("Error polling GitHub:", error);
-            }
-        };
-
-        // Initial check
-        checkJobs();
-        // Set polling interval
-        intervalId = setInterval(checkJobs, 5000);
-
-        return () => clearInterval(intervalId);
-    }, [printerConnected]);
+        const q = query(printJobsRef, where('status', '==', 'pending'), orderBy('createdAt', 'asc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const jobs: any[] = [];
+            snapshot.forEach((docState) => {
+                jobs.push({ id: docState.id, ...docState.data() });
+            });
+            setPrintQueue(jobs);
+            setPendingJobs(jobs.length);
+        });
+        return () => unsubscribe();
+    }, []);
 
     // 2. Process the print queue when a printer is "connected"
     useEffect(() => {
@@ -127,8 +118,9 @@ export default function MobileScene() {
                 // Simulate Bluetooth WebBLE data transfer and mechanical printing delay
                 await new Promise(resolve => setTimeout(resolve, 2500));
 
-                // Job done: Mark as completed by closing the GitHub Issue
-                await completePrintJob(job.id);
+                // Job done: Mark as completed in Firestore
+                const jobRef = doc(db, 'print_jobs', job.id);
+                await updateDoc(jobRef, { status: 'completed' });
 
                 // Success beep sound
                 try {
